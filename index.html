@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EL Samurai - ترحيب</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Cairo', sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+    .welcome {
+      text-align: center;
+      animation: fadeIn 2s ease-in-out;
+    }
+    .welcome h1 {
+      font-size: 3rem;
+      letter-spacing: 2px;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #38bdf8; }
+      to { text-shadow: 0 0 25px #0ea5e9; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome">
+    <h1>Welcome to Samurai Services </h1>
+  </div>  <script>
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 5000); // بعد 5 ثواني يروح لصفحة تسجيل الدخول
+  </script></body>
+</html>

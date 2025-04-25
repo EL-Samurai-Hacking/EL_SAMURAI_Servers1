@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الخدمات</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background: #0d0d0d;
+      color: white;
+    }
+
+    header {
+      background: #111;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      color: #00d4ff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .service {
+      background: #1b1b1b;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    }
+
+    .service h3 {
+      margin: 0 0 10px;
+      color: #00d4ff;
+    }
+
+    .service p {
+      margin: 5px 0;
+    }
+
+    .service button {
+      background: #00d4ff;
+      border: none;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .service button:hover {
+      background: #009db3;
+    }
+  </style>
+</head>
+<body onload="loadServices()">
+
+<header>الخدمات المتاحة</header>
+
+<div class="container" id="servicesContainer">
+  <!-- سيتم توليد الخدمات هنا -->
+</div>
+
+<script>
+  function loadServices() {
+    const services = JSON.parse(localStorage.getItem("services")) || [
+      { name: "تزويد متابعين تيك توك", price: 15 },
+      { name: "تزويد لايكات انستجرام", price: 10 },
+      { name: "مشاهدات يوتيوب", price: 12 },
+      { name: "متابعين انستجرام", price: 14 },
+      { name: "مشاهدات ستوري", price: 8 },
+    ];
+
+    const container = document.getElementById("servicesContainer");
+    services.forEach((service, index) => {
+      const box = document.createElement("div");
+      box.className = "service";
+      box.innerHTML = `
+        <h3>${service.name}</h3>
+        <p>السعر: ${service.price} جنيه</p>
+        <button onclick="orderService(${index})">طلب الخدمة</button>
+      `;
+      container.appendChild(box);
+    });
+  }
+
+  function orderService(index) {
+    const services = JSON.parse(localStorage.getItem("services"));
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    const service = services[index];
+    if (currentUser.balance < service.price) {
+      alert("رصيدك غير كافٍ لطلب هذه الخدمة.");
+      return;
+    }
+
+    currentUser.balance -= service.price;
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+    orders.push({
+      username: currentUser.username,
+      userId: currentUser.id,
+      service: service.name,
+      price: service.price,
+      status: "قيد المراجعة",
+      date: new Date().toLocaleString()
+    });
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    alert("تم إرسال الطلب بنجاح!");
+
+    // إرسال إلى بوت تليجرام
+    const token = "7083283472:AAFKOM4WRYwmDDrwOB63UUGkd8fOUtt27cY";
+    const chatId = "7423189963";
+    const message = `طلب جديد من ${currentUser.username}\nالخدمة: ${service.name}\nالسعر: ${service.price} جنيه\nID: ${currentUser.id}`;
+
+    fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
+    
+    location.href = "orders.html";
+  }
+</script>
+
+</body>
+</html>

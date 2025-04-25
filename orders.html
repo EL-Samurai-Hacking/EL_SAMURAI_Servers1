@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>طلباتي - EL Samurai</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header>
+    <h2>طلباتي</h2>
+    <nav>
+      <a href="home.html">الرئيسية</a>
+      <a href="services.html">الخدمات</a>
+      <a href="account.html">حسابي</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h3>الطلبات السابقة</h3>
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>معرّف الطلب</th>
+          <th>الخدمة</th>
+          <th>العدد</th>
+          <th>الرابط</th>
+          <th>السعر</th>
+          <th>التاريخ</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- الطلبات ستُعرض هنا تلقائيًا -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    const userId = localStorage.getItem("userId");
+    const ordersTable = document.querySelector("#ordersTable tbody");
+
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const userOrders = orders.filter(order => order.userId === userId);
+
+    userOrders.forEach(order => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${order.id}</td>
+        <td>${order.service}</td>
+        <td>${order.quantity}</td>
+        <td><a href="${order.link}" target="_blank">رابط</a></td>
+        <td>${order.price} جنيه</td>
+        <td>${order.date}</td>
+        <td>${order.status}</td>
+      `;
+      ordersTable.appendChild(tr);
+    });
+  </script>
+</body>
+</html>

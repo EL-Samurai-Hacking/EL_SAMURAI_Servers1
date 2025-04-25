@@ -1,0 +1,87 @@
+<!-- user/new-order.html -->
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>طلب خدمة - EL Samurai</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>طلب خدمة جديدة</h1>
+    <p id="balanceDisplay">الرصيد الحالي: 0 جنيه</p>
+
+    <form id="orderForm">
+      <label>اختر الخدمة:</label>
+      <select id="service">
+        <option value="زيادة متابعين انستجرام" data-price="10">زيادة متابعين انستجرام - 10 جنيه</option>
+        <option value="زيادة متابعين تيك توك" data-price="8">زيادة متابعين تيك توك - 8 جنيه</option>
+        <option value="مشاهدات ريلز" data-price="5">مشاهدات ريلز - 5 جنيه</option>
+      </select>
+
+      <label>رابط الحساب:</label>
+      <input type="url" id="link" required placeholder="مثال: https://instagram.com/user" />
+
+      <label>الكمية:</label>
+      <input type="number" id="quantity" required min="1" />
+
+      <button type="submit">طلب</button>
+    </form>
+
+    <p id="result"></p>
+  </div>
+
+  <script>
+    const balanceDisplay = document.getElementById("balanceDisplay");
+    const balance = parseFloat(localStorage.getItem("balance") || "0");
+    balanceDisplay.textContent = `الرصيد الحالي: ${balance} جنيه`;
+
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const service = document.getElementById("service").value;
+      const price = parseFloat(document.getElementById("service").selectedOptions[0].dataset.price);
+      const link = document.getElementById("link").value;
+      const quantity = parseInt(document.getElementById("quantity").value);
+      const totalCost = price * quantity;
+
+      let currentBalance = parseFloat(localStorage.getItem("balance") || "0");
+      if (currentBalance < totalCost) {
+        document.getElementById("result").textContent = "الرصيد غير كافي!";
+        return;
+      }
+
+      currentBalance -= totalCost;
+      localStorage.setItem("balance", currentBalance.toFixed(2));
+      balanceDisplay.textContent = `الرصيد الحالي: ${currentBalance.toFixed(2)} جنيه`;
+
+      const newOrder = {
+        service,
+        link,
+        quantity,
+        date: new Date().toLocaleDateString(),
+        status: "قيد المراجعة"
+      };
+
+      const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+      orders.push(newOrder);
+      localStorage.setItem("orders", JSON.stringify(orders));
+
+      // إرسال الطلب للبوت
+      const telegramData = {
+        chat_id: "7423189963",
+        text: `طلب جديد:\nالخدمة: ${service}\nالرابط: ${link}\nالكمية: ${quantity}\nالتكلفة: ${totalCost} جنيه`
+      };
+
+      fetch(`https://api.telegram.org/bot7083283472:AAFKOM4WRYwmDDrwOB63UUGkd8fOUtt27cY/sendMessage`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(telegramData)
+      });
+
+      document.getElementById("result").textContent = "تم إرسال الطلب بنجاح!";
+      document.getElementById("orderForm").reset();
+    });
+  </script>
+</body>
+</html>

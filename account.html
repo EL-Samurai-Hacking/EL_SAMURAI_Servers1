@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>حسابي - EL Samurai</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header>
+    <h2>حسابي</h2>
+    <nav>
+      <a href="dashboard.html">الرئيسية</a>
+      <a href="services.html">الخدمات</a>
+      <a href="orders.html">طلباتي</a>
+      <a href="account.html" class="active">حسابي</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h3>معلومات الحساب</h3>
+    <p><strong>الـ ID:</strong> <span id="userIdDisplay"></span></p>
+    <p><strong>الرصيد:</strong> <span id="balanceDisplay"></span> جنيه</p>
+    <p><strong>عدد الطلبات:</strong> <span id="ordersCount">0</span></p>
+    <p><strong>عدد مرات الشحن:</strong> <span id="topupCount">0</span></p>
+    <p><strong>رقم المطور:</strong> +994405230548</p>
+
+    <h4>تغيير كلمة المرور</h4>
+    <input type="password" id="newPassword" placeholder="كلمة السر الجديدة">
+    <button onclick="changePassword()">تغيير</button>
+  </main>
+
+  <script>
+    const userId = localStorage.getItem("userId");
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const topups = JSON.parse(localStorage.getItem("topups")) || [];
+
+    const user = users.find(u => u.id === userId);
+    const balance = parseFloat(user?.balance || 0);
+    const userOrders = orders.filter(o => o.userId === userId);
+    const userTopups = topups.filter(t => t.userId === userId);
+
+    document.getElementById("userIdDisplay").textContent = userId;
+    document.getElementById("balanceDisplay").textContent = balance.toFixed(2);
+    document.getElementById("ordersCount").textContent = userOrders.length;
+    document.getElementById("topupCount").textContent = userTopups.length;
+
+    function changePassword() {
+      const newPassword = document.getElementById("newPassword").value;
+      if (!newPassword) return alert("اكتب كلمة مرور جديدة");
+
+      const index = users.findIndex(u => u.id === userId);
+      if (index !== -1) {
+        users[index].password = newPassword;
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("تم تغيير كلمة المرور بنجاح");
+      }
+    }
+  </script>
+</body>
+</html>
